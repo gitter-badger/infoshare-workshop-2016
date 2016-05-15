@@ -7,6 +7,8 @@ require 'bundler'
 require 'sinatra'
 require 'omniauth'
 require 'omniauth-google-oauth2'
+require 'dotenv'
+Dotenv.load
 
 class App < Sinatra::Base
   get '/' do
@@ -32,7 +34,12 @@ use Rack::Session::Cookie, secret: ENV['RACK_COOKIE_SECRET']
 
 use OmniAuth::Builder do
   # For additional provider examples please look at 'omni_auth.rb'
-  provider :google_oauth2, ENV['GOOGLE_KEY'], ENV['GOOGLE_SECRET'], {}
+  provider :google_oauth2, ENV['GOOGLE_KEY'], ENV['GOOGLE_SECRET'], {
+    scope: 'email, profile, https://www.googleapis.com/auth/gmail.readonly',
+    prompt: 'select_account',
+    image_aspect_ratio: 'square',
+    image_size: 50
+  }
 end
 
 run App.new
