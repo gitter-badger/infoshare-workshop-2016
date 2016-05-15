@@ -8,4 +8,7 @@
     <li><%= message.subject %></li>
   <% end %>
 </ul>
+<% if @next_page_token %>
+  <a href="/search?<%= params['q'] %>&page_token=<%= @next_page_token %>">Next page</a>
+<% end %>
 <p>Total messages: <%= @total_messages %></p>

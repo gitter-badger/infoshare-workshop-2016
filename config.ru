@@ -57,18 +57,24 @@ class App < Sinatra::Base
   get '/search' do
     api = gmail_api
 
-    api.list_user_messages('me', q: params['q']) do |result, err|
+    api.list_user_messages('me', q: params['q'], page_token: params['page_token']) do |result, err|
       raise err if err
 
       @messages = []
-      if result.messages
-        result.messages.each do |message|
-          fetched_message = api.get_user_message('me', message.id, format: 'raw')
-          parsed_message = Mail.new(fetched_message.raw)
-          @messages << parsed_message
+      api.batch do
+        if result.messages
+          result.messages.each do |message|
+            api.get_user_message('me', message.id, format: 'raw') do |res, err|
+              raise err if err
+
+              parsed_message = Mail.new(res.raw)
+              @messages << parsed_message
+            end
+          end
         end
       end
 
+      @next_page_token = result.next_page_token
       @total_messages = result.result_size_estimate
     end
 
