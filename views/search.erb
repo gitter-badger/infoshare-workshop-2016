@@ -1,0 +1,11 @@
+<form action="/search" method="get">
+  <input type="text" name="q" value="<%= params['q'] %>">
+  <input type="button" name="search" value="Search">
+</form>
+
+<ul>
+  <% @messages.each do |message| %>
+    <li><%= message.subject %></li>
+  <% end %>
+</ul>
+<p>Total messages: <%= @total_messages %></p>
